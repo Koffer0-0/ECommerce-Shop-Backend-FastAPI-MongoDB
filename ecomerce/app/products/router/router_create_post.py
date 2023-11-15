@@ -9,7 +9,7 @@ from ..service import Service, get_service
 from . import router
 
 
-class CreateHistoryRequest(AppModel):
+class CreateProductRequest(AppModel):
     address: str
     name: str
     lat: float
@@ -17,19 +17,19 @@ class CreateHistoryRequest(AppModel):
     imageUrl: str
 
 
-@router.post("/createHistory")
-def create_history(
-    input: CreateHistoryRequest,
+@router.post("/createProduct")
+def create_product(
+    input: CreateProductRequest,
     jwt_data: JWTData = Depends(parse_jwt_user_data),
     svc: Service = Depends(get_service),
 ):
     payload = input.dict()
     payload["user_id"] = jwt_data.user_id
-    svc.repository.create_post(payload)
+    svc.repository.create_products(payload)
     return Response(status_code=200)
 
 
-class History(AppModel):
+class Product(AppModel):
     address: str
     name: str
     lat: float
@@ -37,13 +37,13 @@ class History(AppModel):
     imageUrl: str
 
 
-class GetHistoryResponse(AppModel):
+class GetProductResponse(AppModel):
     total: int
-    objects: List[History]
+    objects: List[Product]
     
 
-@router.get("/getHistory", response_model=GetHistoryResponse)
-def get_history(
+@router.get("/getProduct", response_model=GetProductResponse)
+def get_product(
     page: int,
     limit: int,
     jwt_data: JWTData = Depends(parse_jwt_user_data),
