@@ -27,9 +27,9 @@ class ProductRepository:
         # Create a filter to retrieve posts only for the specified user_id
         filter_query = {"user_id": ObjectId(user_id)}
 
-        total_count = self.database["history"].count_documents(filter_query)
+        total_count = self.database["products"].count_documents(filter_query)
 
-        cursor = self.database["history"].find(filter_query).skip(offset).limit(page_size).sort("created_at")
+        cursor = self.database["products"].find(filter_query).skip(offset).limit(page_size).sort("created_at")
 
         result = list(cursor)
 
@@ -38,4 +38,4 @@ class ProductRepository:
             "objects": result
         }
 
-    def get_cart_details(self):
+    # def get_cart_details(self):
