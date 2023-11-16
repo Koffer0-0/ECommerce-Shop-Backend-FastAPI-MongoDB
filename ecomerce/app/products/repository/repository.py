@@ -20,22 +20,15 @@ class ProductRepository:
 
         self.database["products"].insert_one(payload)
 
-    def get_products(self, user_id: str, page: int, page_size: int):
-        # Calculate the offset based on the page and page_size
-        offset = (page - 1) * page_size
+    def get_all_products(self):
+        cursor = self.database["products"].find()  # Find all products
+        result = list(cursor)  # Convert cursor to a list
+        return result
 
-        # Create a filter to retrieve posts only for the specified user_id
-        filter_query = {"user_id": ObjectId(user_id)}
 
-        total_count = self.database["products"].count_documents(filter_query)
+    def get_recommended_products_for_user(self, user_id: str):
+        # Example: Recommend the latest 10 products
+        cursor = self.database["products"].find().sort("created_at", -1).limit(10)
 
-        cursor = self.database["products"].find(filter_query).skip(offset).limit(page_size).sort("created_at")
-
-        result = list(cursor)
-
-        return {
-            "total": total_count,
-            "objects": result
-        }
-
-    # def get_cart_details(self):
+        recommended_products = list(cursor)
+        return recommended_products

@@ -10,27 +10,23 @@ class OrderRepository:
         self.database = database
 
     def create_order(self, input: dict):
-        payload = {
-            "name": input["name"],
-            "price": input["price"],
-            "lng": input["lng"],
-            "imageUrl": input["imageUrl"],
-            "created_at": datetime.utcnow(),
-            "user_id": ObjectId(input["user_id"])
+        # Assuming 'input' contains order items and other details
+        order_payload = {
+            "items": input["items"],  # Example: [{"product_id": "...", "quantity": 1}, ...]
+            "user_id": ObjectId(input["user_id"]),
+            "created_at": datetime.utcnow()
         }
+        self.database["orders"].insert_one(order_payload)
 
-        self.database["orders"].insert_one(payload)
-
-    def get_orders(self, user_id: str, page: int, page_size: int):
+    def get_orders(self, user_id: str):
         # Calculate the offset based on the page and page_size
-        offset = (page - 1) * page_size
 
         # Create a filter to retrieve posts only for the specified user_id
         filter_query = {"user_id": ObjectId(user_id)}
 
         total_count = self.database["orders"].count_documents(filter_query)
 
-        cursor = self.database["orders"].find(filter_query).skip(offset).limit(page_size).sort("created_at")
+        cursor = self.database["orders"].find(filter_query).skip(offset).sort("created_at")
 
         result = list(cursor)
 

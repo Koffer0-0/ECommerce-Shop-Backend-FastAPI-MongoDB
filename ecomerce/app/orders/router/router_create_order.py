@@ -9,12 +9,14 @@ from ..service import Service, get_service
 from . import router
 
 
+
+class OrderItem(AppModel):
+    product_id: str
+    quantity: int
+
+
 class CreateOrderRequest(AppModel):
-    address: str
-    name: str
-    lat: float
-    lng: float
-    imageUrl: str
+    items: List[OrderItem]
 
 
 @router.post("/createOrder")
@@ -30,25 +32,21 @@ def create_order(
 
 
 class Order(AppModel):
-    address: str
-    name: str
-    lat: float
-    lng: float
-    imageUrl: str
+    # Define the structure of an Order
+    items: List[OrderItem]
+    created_at: datetime
 
 
 class GetOrderResponse(AppModel):
     total: int
     objects: List[Order]
-    
+
 
 @router.get("/getOrder", response_model=GetOrderResponse)
 def get_order(
-    page: int,
-    limit: int,
     jwt_data: JWTData = Depends(parse_jwt_user_data),
     svc: Service = Depends(get_service),
 ):
-    result = svc.repository.get_posts(user_id=jwt_data.user_id, page=page, page_size=limit)
+    result = svc.repository.get_orders(user_id=jwt_data.user_id)
     return result
 
